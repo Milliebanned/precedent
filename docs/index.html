@@ -22,6 +22,7 @@
     <a href="#how">How it works</a>
     <a href="#checks">Stress tests</a>
     <a href="#origin">Why it exists</a>
+    <a href="guide.html">Guide</a>
     <a href="https://github.com/Milliebanned/precedent">Code</a>
   </nav>
   <p class="pill" id="status" aria-live="polite"><i></i><span>Loading the record</span></p>
@@ -48,7 +49,7 @@
     <dl class="proof">
       <div><dt id="p-windows">–</dt><dd>nights and weekends on record</dd></div>
       <div><dt id="p-paths">–</dt><dd>price paths searched</dd></div>
-      <div><dt>9</dt><dd>stress tests on every idea</dd></div>
+      <div><dt>10</dt><dd>stress tests, checked against your limits</dd></div>
       <div><dt>0</dt><dd>orders placed. You decide.</dd></div>
     </dl>
   </div>
@@ -124,7 +125,7 @@
       <li class="reveal"><span>01</span><h3>You describe the idea</h3><p>In plain English. Qwen turns the sentence into a setup: token, direction, size, leverage, entry time and the conditions you named. Every part stays editable.</p></li>
       <li class="reveal"><span>02</span><h3>It retrieves the precedents</h3><p>Every closed-market night and weekend on record for that token on Bitget is searched. The ones that match your conditions at your entry time are kept.</p></li>
       <li class="reveal"><span>03</span><h3>It shows how they ended</h3><p>Each precedent after a 0.30% round trip in fees and slippage, the ride on the way there, and the same trade with no conditions as a baseline.</p></li>
-      <li class="reveal"><span>04</span><h3>It tries to break the idea</h3><p>Nine stress tests, from the worst night on record to the live Bitget order book for your size, each checked against your own house rules.</p></li>
+      <li class="reveal"><span>04</span><h3>It tries to break the idea</h3><p>Up to ten stress tests, from the worst night on record to the live Bitget order book for your size, each checked against your own house rules.</p></li>
       <li class="reveal"><span>05</span><h3>You decide</h3><p>A short memo sums up the numbers. Precedent never places an order. Save the idea and the notebook shows what happened once the window closed.</p></li>
     </ol>
   </section>
@@ -132,7 +133,7 @@
   <section class="checks" id="checks">
     <div class="wrap">
       <p class="kicker reveal">Stress tests</p>
-      <h2 class="reveal">Nine ways an idea can fail, checked before it costs you anything.</h2>
+      <h2 class="reveal">Ten ways an idea can fail, checked before it costs you anything.</h2>
       <ul class="checklist">
         <li class="reveal"><b>Worst precedent</b><span>The most a matching night has lost, against the most you allow.</span></li>
         <li class="reveal"><b>Worst night on record</b><span>The same trade on the single worst window, conditions or not.</span></li>
@@ -142,6 +143,7 @@
         <li class="reveal"><b>Cost share</b><span>How much of a typical move the fees and slippage eat.</span></li>
         <li class="reveal"><b>Recent half</b><span>Whether the pattern still paid in the latest precedents, or only early on.</span></li>
         <li class="reveal"><b>Condition check</b><span>Whether your condition beats the same trade with no conditions, and on the other nine tokens.</span></li>
+        <li class="reveal"><b>Earnings</b><span>Whether the company reports before the next open, when moves are largest.</span></li>
         <li class="reveal"><b>Live order book</b><span>What your size costs to fill on Bitget right now, against the cost assumed.</span></li>
       </ul>
     </div>
@@ -180,6 +182,8 @@
 <footer class="foot">
   <a class="brand" href="#top"><img src="mark.svg" alt="" width="22" height="22"><span>Precedent</span></a>
   <p>Built for Bitget AI Base Camp Hackathon S2 · AI Trading Desk</p>
+  <a href="guide.html">Product guide</a>
+  <a href="precedent-guide.pdf">PDF</a>
   <a href="https://github.com/Milliebanned/precedent">GitHub</a>
 </footer>
 

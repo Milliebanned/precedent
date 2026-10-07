@@ -247,11 +247,11 @@ td.g { color: var(--gain); } td.l { color: var(--loss); }
 
 .checks { margin-top: 130px; padding: 0 0 120px; color: var(--cream); background: radial-gradient(900px 600px at 88% 0%, var(--deep-2) 0%, transparent 65%), var(--deep); }
 .checks .kicker { color: var(--amber); }
-.checklist { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 64px; border-top: 1px solid var(--cream-3); border-left: 1px solid var(--cream-3); }
-.checklist li { padding: 28px 28px 32px; border-right: 1px solid var(--cream-3); border-bottom: 1px solid var(--cream-3); transition: background 0.3s; }
+.checklist { list-style: none; display: grid; grid-template-columns: repeat(5, 1fr); margin-top: 64px; border-top: 1px solid var(--cream-3); border-left: 1px solid var(--cream-3); }
+.checklist li { padding: 24px 22px 28px; border-right: 1px solid var(--cream-3); border-bottom: 1px solid var(--cream-3); transition: background 0.3s; }
 .checklist li:hover { background: rgba(243, 236, 220, 0.05); }
-.checklist b { display: block; font: 500 23px/1.2 var(--serif); letter-spacing: -0.01em; }
-.checklist span { display: block; margin-top: 8px; font-size: 14.5px; color: var(--cream-2); }
+.checklist b { display: block; font: 500 20px/1.2 var(--serif); letter-spacing: -0.01em; }
+.checklist span { display: block; margin-top: 8px; font-size: 13.5px; color: var(--cream-2); }
 
 .story { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 72px; margin-top: 64px; align-items: start; }
 .figures { display: flex; align-items: flex-start; gap: 24px; color: var(--ink-3); }

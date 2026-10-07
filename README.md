@@ -12,6 +12,7 @@ places an order.
 Bitget AI Base Camp Hackathon S2 · AI Trading Desk · Decision Stress Testing.
 
 - **Live demo (no login):** https://milliebanned.github.io/precedent/
+- **Product guide:** https://milliebanned.github.io/precedent/guide.html ([PDF](https://milliebanned.github.io/precedent/precedent-guide.pdf))
 - **One full research task, ready to run:** [Short COIN two hours before the open when Bitcoin is down more than 1%](https://milliebanned.github.io/precedent/?q=Short%20COIN%202%20hours%20before%20the%20open%20if%20Bitcoin%20is%20down%20more%20than%201%25%2C%203x%2C%202%2C000%20USDT)
 
 ## The thesis

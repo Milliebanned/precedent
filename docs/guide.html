@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Precedent · Product guide</title>
+<meta name="description" content="What Precedent does, how to use it, and how every number on the page is computed.">
+<link rel="icon" href="mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+:root { --paper: #f4efe4; --sheet: #fffdf8; --ink: #17201b; --ink-2: #4c554f; --ink-3: #7a817b; --rule: #ddd5c4; --rule-2: #c9bfa9; --deep: #0d1f18; --cream: #f3ecdc; --gold: #a86e12; --amber: #e0a13a;
+  --good: #0c7a2c; --warn: #a86e12; --bad: #c22f2f; --serif: "Newsreader", Georgia, serif; --sans: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace; }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 15px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+h1, h2, h3, p, ol, ul, table, figure { margin: 0; padding: 0; }
+a { color: inherit; }
+.bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 20px; padding: 12px 28px; background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--rule); }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 600 21px/1 var(--serif); }
+.bar span { color: var(--ink-3); font: 400 12px var(--mono); margin-right: auto; }
+.bar a.btn { text-decoration: none; font-weight: 500; font-size: 14px; padding: 8px 16px; border-radius: 9px; border: 1px solid var(--rule-2); }
+.bar a.btn.main { background: var(--deep); color: var(--cream); border-color: var(--deep); }
+
+.doc { max-width: 880px; margin: 36px auto 80px; display: grid; gap: 28px; padding: 0 16px; }
+.page { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 64px 72px; box-shadow: 0 30px 60px -40px rgba(23, 32, 27, 0.4); }
+.cover { background: radial-gradient(700px 480px at 85% 20%, #17382b 0%, transparent 65%), var(--deep); color: var(--cream); border-color: var(--deep); min-height: 620px; display: flex; flex-direction: column; }
+.cover img { width: 54px; height: 54px; }
+.cover .k { margin-top: auto; font: 500 12px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); }
+.cover h1 { font: 500 76px/0.98 var(--serif); letter-spacing: -0.035em; margin-top: 16px; }
+.cover h1 em { font-weight: 400; color: var(--amber); }
+.cover p { margin-top: 22px; font-size: 18px; max-width: 46ch; color: rgba(243, 236, 220, 0.72); }
+.cover dl { display: flex; gap: 40px; margin: 44px 0 0; padding-top: 20px; border-top: 1px solid rgba(243, 236, 220, 0.2); font: 400 12px/1.5 var(--mono); color: rgba(243, 236, 220, 0.7); }
+.cover dt { color: var(--amber); } .cover dd { margin: 0; }
+
+.k { font: 500 11.5px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
+h2 { font: 500 36px/1.1 var(--serif); letter-spacing: -0.022em; margin-top: 10px; text-wrap: balance; }
+h3 { font: 500 21px/1.25 var(--serif); margin-top: 30px; }
+p { margin-top: 12px; color: var(--ink-2); max-width: 68ch; }
+p.lead { font: 400 20px/1.5 var(--serif); color: var(--ink); }
+ul, ol { margin: 12px 0 0 20px; color: var(--ink-2); display: grid; gap: 6px; }
+b { color: var(--ink); font-weight: 600; }
+code, .q { font: 400 13px var(--mono); background: var(--paper); border: 1px solid var(--rule); border-radius: 5px; padding: 1px 6px; color: var(--ink); }
+.q { display: block; padding: 10px 14px; margin-top: 12px; font-size: 14px; border-left: 3px solid var(--amber); border-radius: 0 6px 6px 0; }
+table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13.5px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); }
+th { font: 500 11px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); border-bottom-color: var(--rule-2); }
+td:first-child { color: var(--ink); font-weight: 500; white-space: nowrap; padding-right: 18px; }
+td { color: var(--ink-2); }
+.tag { display: inline-block; font: 500 11px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+.tag.good { color: var(--good); background: color-mix(in srgb, var(--good) 10%, transparent); }
+.tag.warn { color: var(--warn); background: color-mix(in srgb, var(--warn) 12%, transparent); }
+.tag.bad { color: var(--bad); background: color-mix(in srgb, var(--bad) 10%, transparent); }
+.flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; margin-top: 22px; border: 1px solid var(--rule-2); border-radius: 10px; overflow: hidden; }
+.flow div { padding: 16px 14px; border-right: 1px solid var(--rule); background: var(--paper); }
+.flow div:last-child { border-right: 0; }
+.flow span { font: 400 11px var(--mono); color: var(--gold); }
+.flow b { display: block; font: 500 16px/1.25 var(--serif); margin-top: 8px; }
+.flow small { display: block; font-size: 12px; line-height: 1.45; color: var(--ink-2); margin-top: 6px; }
+.note { margin-top: 18px; padding: 14px 18px; background: var(--paper); border-radius: 8px; font-size: 14px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 36px; }
+.formula { font: 400 13.5px/1.7 var(--mono); background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 12px 16px; margin-top: 12px; color: var(--ink); white-space: pre-wrap; }
+.foot { font: 400 11.5px var(--mono); color: var(--ink-3); margin-top: 36px; padding-top: 14px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; }
+
+@media (max-width: 760px) { .page { padding: 32px 22px; } .cover h1 { font-size: 48px; } .flow, .two { grid-template-columns: 1fr; } .flow div { border-right: 0; border-bottom: 1px solid var(--rule); } td:first-child { white-space: normal; } .bar span { display: none; } }
+@page { size: A4; margin: 17mm 17mm 16mm; }
+@page cover { size: A4; margin: 0; }
+@media print {
+  body { background: #fff; font-size: 10.5pt; }
+  .bar, .foot { display: none; }
+  .doc { max-width: none; margin: 0; padding: 0; display: block; }
+  .page { border: 0; border-radius: 0; box-shadow: none; padding: 0; margin-top: 26pt; background: none; }
+  .cover + .page { break-before: page; margin-top: 0; }
+  .k, h2 { break-after: avoid; }
+  .cover .k { margin-top: 118mm; } .cover dl { break-inside: avoid; }
+  .cover { page: cover; break-before: auto; display: block; height: 296mm; overflow: hidden; min-height: 0; padding: 24mm 20mm; background: radial-gradient(700px 480px at 85% 20%, #17382b 0%, transparent 65%), var(--deep); }
+  h2 { font-size: 26pt; } h3 { font-size: 15pt; margin-top: 20pt; break-after: avoid; }
+  p.lead { font-size: 14pt; }
+  table { font-size: 9.5pt; }
+  tr, .formula, .note, .flow, .q, li { break-inside: avoid; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+<div class="bar">
+  <a class="brand" href="./"><img src="mark.svg" alt="" width="26" height="26">Precedent</a>
+  <span>Product guide · October 2026</span>
+  <a class="btn" href="precedent-guide.pdf" download>Download PDF</a>
+  <a class="btn main" href="./">Open the workbench</a>
+</div>
+
+<main class="doc">
+
+<section class="page cover">
+  <img src="mark.svg" alt="">
+  <p class="k">Product guide</p>
+  <h1>Every trade idea has a <em>precedent</em>.</h1>
+  <p>What Precedent does, how to use each part of it, and how every number on the page is computed.</p>
+  <dl>
+    <div><dt>Product</dt><dd>AI research workbench</dd></div>
+    <div><dt>Market</dt><dd>Tokenized US stocks on Bitget</dd></div>
+    <div><dt>Version</dt><dd>October 2026</dd></div>
+    <div><dt>Live</dt><dd>milliebanned.github.io/precedent</dd></div>
+  </dl>
+</section>
+
+<section class="page">
+  <p class="k">1 · Overview</p>
+  <h2>What Precedent is</h2>
+  <p class="lead">Precedent is a research workbench for people who trade tokenized US stocks while the US stock market is closed. You describe a trade in plain English. It finds every past night or weekend that looked the same, shows how each one ended, and stress-tests the idea before you place it.</p>
+  <p>Precedent does research only. It never places an order and it never tells you to buy or sell. The trader makes the decision.</p>
+
+  <h3>The problem it solves</h3>
+  <p>Tokenized stocks (Bitget rTokens) trade around the clock, but the real US market is open only 6.5 hours a day, five days a week. For the other 81% of the week the token price is the crowd’s guess at where the stock will open, in a thin market with few people watching.</p>
+  <p>Trade ideas for those hours usually arrive as a story: “Bitcoin is falling, so Coinbase will open lower.” Checking a story against the record means downloading candles, lining up market hours and counting outcomes by hand. That takes an evening, and the open is two hours away, so the story is traded unchecked.</p>
+
+  <h3>Who it is for</h3>
+  <ul>
+    <li><b>Active retail and semi-professional traders</b> of rTokens and US stock futures on Bitget who hold positions overnight or over weekends.</li>
+    <li><b>Position size</b> of roughly 500 to 50,000 USDT, often with 2× to 5× leverage, a few trades a week.</li>
+    <li><b>The moment of use</b> is the minutes before opening a position, when a base rate is most useful and least available.</li>
+  </ul>
+
+  <h3>How it works, in five steps</h3>
+  <div class="flow">
+    <div><span>01</span><b>Describe</b><small>Type the idea. Qwen turns it into an editable setup.</small></div>
+    <div><span>02</span><b>Retrieve</b><small>Every matching closed-market window is pulled from the record.</small></div>
+    <div><span>03</span><b>Measure</b><small>How each one ended after costs, against a no-condition baseline.</small></div>
+    <div><span>04</span><b>Stress</b><small>Up to ten tests, checked against your own limits.</small></div>
+    <div><span>05</span><b>Decide</b><small>A short memo. You make the call and save it to the notebook.</small></div>
+  </div>
+  <p class="foot"><span>Precedent · Product guide</span><span>2</span></p>
+</section>
+
+<section class="page">
+  <p class="k">2 · Using it</p>
+  <h2>Describing a trade idea</h2>
+  <p>Type the idea the way you would say it to a colleague. Three kinds of message are understood.</p>
+  <table>
+    <tr><th>You type</th><th>What happens</th></tr>
+    <tr><td>A trade idea</td><td>A new setup is built and tested. <span class="q">Short COIN 2 hours before the open if Bitcoin is down more than 1%, 3x, 2,000 USDT</span></td></tr>
+    <tr><td>A change</td><td>Only the part you mention changes; the rest of the setup is kept. <span class="q">What if I wait until 1 hour before the open and use 5x?</span></td></tr>
+    <tr><td>A question</td><td>It is answered from the numbers on screen, with no new search. <span class="q">Why is the recent half weaker?</span></td></tr>
+  </table>
+
+  <h3>What a setup contains</h3>
+  <p>Each part appears as a control above the results. Changing a control re-runs the search immediately.</p>
+  <table>
+    <tr><th>Part</th><th>Meaning</th><th>Default</th></tr>
+    <tr><td>Token</td><td>One of NVDA, TSLA, AAPL, MSFT, AMZN, GOOGL, META, SPY, QQQ, COIN</td><td>—</td></tr>
+    <tr><td>Side</td><td>Long or short</td><td>Long</td></tr>
+    <tr><td>Size</td><td>Position size in USDT. Profit and loss in USDT are size × result.</td><td>1,000</td></tr>
+    <tr><td>Leverage</td><td>Used for the liquidation test and the margin at risk</td><td>1×</td></tr>
+    <tr><td>Window</td><td>Overnight (a weekday close to the next open) or weekend (Friday close to the next open, including holidays)</td><td>The current or next window</td></tr>
+    <tr><td>Entry</td><td>Hours after the 16:00 New York close, or hours before the 09:30 open. “Now” uses the current time in the current window.</td><td>Now</td></tr>
+    <tr><td>Exit</td><td>15 minutes after the open, or a fixed number of hours after entry</td><td>15 min after the open</td></tr>
+    <tr><td>Token so far</td><td>The token’s own move since the close at entry time, in units of its normal day (“down big” is −0.5 or lower)</td><td>Any</td></tr>
+    <tr><td>Bitcoin so far</td><td>Bitcoin’s move since the close at entry time, in percent</td><td>Any</td></tr>
+    <tr><td>Earnings</td><td>Only earnings nights, or no earnings nights</td><td>Any</td></tr>
+    <tr><td>Stop</td><td>Stop-loss distance in percent</td><td>None</td></tr>
+  </table>
+
+  <h3>“Like right now”</h3>
+  <p>If you ask for windows that look like current conditions, Precedent reads the token’s and Bitcoin’s live move since the close from Bitget and searches for past windows within a tolerance of both: half the size of the move, with a floor of 0.3 normal days for the token and 1 percentage point for Bitcoin.</p>
+
+  <h3>House rules</h3>
+  <p>Three limits of your own, stored in your browser: the most you will lose on one trade, the highest leverage you use, and the fewest precedents you trust. Every idea is checked against them, and a broken rule is shown in red under the verdict and repeated in the memo.</p>
+  <p class="foot"><span>Precedent · Product guide</span><span>3</span></p>
+</section>
+
+<section class="page">
+  <p class="k">3 · Reading the result</p>
+  <h2>The case file</h2>
+  <p>Every tested idea produces one case file. It reads from top to bottom: verdict, key figures, two charts, stress tests, memo, and the full table.</p>
+
+  <h3>The verdict</h3>
+  <p>The verdict is set by fixed rules, in this order. The model has no say in it.</p>
+  <table>
+    <tr><th>Verdict</th><th>When</th></tr>
+    <tr><td><span class="tag warn">No precedent</span></td><td>No past window matches the setup.</td></tr>
+    <tr><td><span class="tag warn">Thin record</span></td><td>Fewer matches than your “fewest precedents I trust” rule (10 unless you change it).</td></tr>
+    <tr><td><span class="tag bad">History is against it</span></td><td>The median result is zero or negative, or fewer than half the precedents made money.</td></tr>
+    <tr><td><span class="tag warn">Worked earlier, not lately</span></td><td>The setup paid overall, but the latest half of the precedents averaged zero or less.</td></tr>
+    <tr><td><span class="tag good">History leans your way</span></td><td>None of the above.</td></tr>
+  </table>
+
+  <h3>The key figures</h3>
+  <table>
+    <tr><th>Figure</th><th>Meaning</th></tr>
+    <tr><td>Precedents</td><td>Matching windows, out of all windows of that kind on record for the token.</td></tr>
+    <tr><td>Made money</td><td>Share of precedents with a positive result after costs. The same figure with no conditions is shown beneath it.</td></tr>
+    <tr><td>Median result</td><td>The middle outcome, in percent and in USDT for your size.</td></tr>
+    <tr><td>Bad case</td><td>With 10 or more precedents, the 5th percentile (a 1-in-20 outcome). With fewer, the worst precedent.</td></tr>
+    <tr><td>Typical worst point</td><td>The average of the worst level each precedent reached between entry and exit, before costs.</td></tr>
+  </table>
+
+  <h3>The two charts</h3>
+  <ul>
+    <li><b>How each precedent ended.</b> One dot per past window, placed at its result after costs. Blue made money, red lost. The line marks the median; the shaded band is the middle 90% when there are 10 or more.</li>
+    <li><b>The ride from entry to exit.</b> One line per precedent, in the direction of your trade and before costs, with the median ride in bold. It shows how uncomfortable the trade was on the way, not only where it ended.</li>
+  </ul>
+  <p>Hovering a dot or a line shows that window’s date, the token’s and Bitcoin’s move at entry, the result, and whether a stop or liquidation was hit. The same window is highlighted in both charts.</p>
+
+  <h3>The memo</h3>
+  <p>Qwen writes the memo from a summary of the computed numbers and nothing else. It always has four parts: what history says, whether your condition adds anything over the baseline, what could hurt, and what to check before clicking. If the model cannot be reached, a plain summary is built from the same numbers.</p>
+
+  <h3>The notebook</h3>
+  <p>“Save to notebook” stores the idea in your browser with the window it targets. Once that window has closed and the record has been rebuilt, the notebook shows what actually happened and whether it fell inside the range the precedents suggested.</p>
+  <p class="foot"><span>Precedent · Product guide</span><span>4</span></p>
+</section>
+
+<section class="page">
+  <p class="k">4 · Stress tests</p>
+  <h2>Ten ways an idea can fail</h2>
+  <p>Each test shows a result, a short explanation and a flag. Green is inside your limits, amber deserves a look, red is a problem.</p>
+  <table>
+    <tr><th>Test</th><th>What it computes</th><th>Flagged when</th></tr>
+    <tr><td>Worst precedent</td><td>The largest loss among the matching windows, in USDT for your size.</td><td>It exceeds your maximum loss.</td></tr>
+    <tr><td>Worst night on record</td><td>The same trade on the worst of all windows of that kind, with no conditions.</td><td>It exceeds your maximum loss.</td></tr>
+    <tr><td>Volatility doubles</td><td>Every precedent replayed with its move doubled, then the 1-in-20 case (or the worst, under 10 precedents).</td><td>It exceeds your maximum loss.</td></tr>
+    <tr><td>Liquidation</td><td>The adverse move that wipes out the margin (1 ÷ leverage), in percent and in normal days, and how often the ride went that far in any window on record.</td><td>Red if it ever happened; amber if under 3 normal days away.</td></tr>
+    <tr><td>Stop-outs</td><td>How many precedents touched your stop before the exit.</td><td>More than 40% were stopped.</td></tr>
+    <tr><td>Costs</td><td>The 0.30% round trip as a share of the typical move from entry to exit.</td><td>Amber above 25%, red above 50%.</td></tr>
+    <tr><td>Recent half</td><td>Average result in the first half of the precedents against the latest half.</td><td>Red if it paid early and not lately.</td></tr>
+    <tr><td>Condition check</td><td>Median with your conditions against the same trade with none, and the same setup on the other nine tokens.</td><td>The condition adds less than 0.10 points.</td></tr>
+    <tr><td>Earnings</td><td>Whether the token reports before the next open, and how many precedents were earnings nights.</td><td>A report is due this window.</td></tr>
+    <tr><td>Live order book</td><td>The cost of filling your size against the Bitget order book right now, measured from the mid price.</td><td>Amber above the 0.05% assumed, red above 0.15% or if the book is too thin.</td></tr>
+  </table>
+  <p class="note">The stop-out and liquidation tests appear only when the setup has a stop or leverage above 1×, and the condition check only when the setup has a condition. So a setup is tested seven to ten ways.</p>
+
+  <h3>Why the “recent half” test exists</h3>
+  <p>This project began as a trading rule: follow Bitcoin’s overnight move into the stock open. Of 144 versions, the best one traded the Coinbase token two hours before the bell. On the 45 sessions it was chosen from it returned +2.19% with a Sharpe ratio of 5.56. On the following month, which it had never seen, it returned −0.04% with a Sharpe of −0.21.</p>
+  <p>A pattern can be real in the record and already gone. The recent-half test asks that question of every idea. The study’s code and results are published in the repository.</p>
+  <p class="foot"><span>Precedent · Product guide</span><span>5</span></p>
+</section>
+
+<section class="page">
+  <p class="k">5 · Method</p>
+  <h2>How the numbers are computed</h2>
+
+  <h3>The record</h3>
+  <p>The record is built from Bitget’s public 15-minute candles for ten rTokens and BTCUSDT, starting 13 July 2026. A <b>closed-market window</b> runs from a 16:00 New York close to the next 09:30 open. Each token’s path through each window is stored every 30 minutes as its return since the close, with the high and low inside each half hour. The record is rebuilt every trading day, 20 minutes after the open.</p>
+  <ul>
+    <li>A token with no trade in the previous hour has no price at that point, and a window where a token has prices for under half its points is left out. Before August 2026 the tokens did not trade on weekends, so those windows are absent.</li>
+    <li>A token’s <b>normal day</b> is the standard deviation of its last 20 close-to-close returns before the window.</li>
+  </ul>
+
+  <h3>One precedent</h3>
+  <div class="formula">gross  = side × (exit price ÷ entry price − 1)
+result = gross − 0.30%            (0.10% fee + 0.05% slippage, each side)
+USDT   = size × result
+worst point = the lowest value of side × (price ÷ entry − 1) between entry and exit,
+              using each half hour’s low (long) or high (short)</div>
+  <ul>
+    <li><b>Stop:</b> if the worst point reaches the stop distance, the result becomes −stop − 0.30%. It assumes a fill at the stop level; a gap through it would cost more.</li>
+    <li><b>Liquidation:</b> with leverage L above 1×, if the worst point reaches −1 ÷ L the result becomes −1 ÷ L, the whole margin. Maintenance margin would trigger it slightly earlier.</li>
+  </ul>
+
+  <h3>Matching</h3>
+  <p>A past window is a precedent when it is the same kind of window, the token had a price at the entry time, and at that moment the token’s move (in normal days), Bitcoin’s move (in percent) and the earnings flag all fall inside the setup’s conditions. The <b>baseline</b> is the same search with no conditions. <b>Peers</b> is the same search on the other nine tokens.</p>
+
+  <h3>What the AI does, and does not do</h3>
+  <div class="two">
+    <div>
+      <p><b>Qwen 3.8 Max does</b></p>
+      <ul><li>Read the sentence and write the setup</li><li>Decide whether a message is an idea, a change or a question</li><li>Write the memo and answer questions, from the computed numbers only</li></ul>
+    </div>
+    <div>
+      <p><b>It does not</b></p>
+      <ul><li>Do any arithmetic</li><li>Choose the verdict or any flag</li><li>See prices, place orders or give advice to buy or sell</li></ul>
+    </div>
+  </div>
+  <p>Every number is computed in the browser by open code from the published record, so the same setup always gives the same result. Conditions are written by the model as a direction and a size (“down, 1%”), which the page converts to a range; this keeps a parsed idea from flipping sign.</p>
+
+  <h3>Data sources</h3>
+  <table>
+    <tr><th>Source</th><th>Used for</th></tr>
+    <tr><td>Bitget market data</td><td>15-minute candles (the record), live prices (“now”), live order book (fill cost)</td></tr>
+    <tr><td>bitget-mcp-server</td><td>Earnings calendar for the eight single stocks</td></tr>
+    <tr><td>Qwen 3.8 Max</td><td>Language only, through a Cloudflare Worker that keeps the key off the page</td></tr>
+  </table>
+  <p class="foot"><span>Precedent · Product guide</span><span>6</span></p>
+</section>
+
+<section class="page">
+  <p class="k">6 · A worked example</p>
+  <h2>From a sentence to a decision</h2>
+  <span class="q">Short COIN 2 hours before the open if Bitcoin is down more than 1%, 3x, 2,000 USDT</span>
+  <table>
+    <tr><th>Step</th><th>What Precedent shows</th></tr>
+    <tr><td>Setup</td><td>COIN, short, 2,000 USDT, 3×, overnight, entry 2h before the open, Bitcoin down 1% or more.</td></tr>
+    <tr><td>Precedents</td><td>8 of 48 overnight windows match.</td></tr>
+    <tr><td>Outcome</td><td>75% made money. Median +1.30% (+26 USDT) after costs. Worst −1.64% (−33 USDT).</td></tr>
+    <tr><td>Baseline</td><td>With no conditions the trade won 48% of the time, median −0.19%. The Bitcoin condition is doing the work.</td></tr>
+    <tr><td>Peers</td><td>On the other nine tokens the same setup had a median of −0.13%. The effect is specific to COIN.</td></tr>
+    <tr><td>Stress</td><td>Worst night on record −5.93%. With volatility doubled −2.99%. Liquidation at 3× is 7.2 normal days away and was never reached. Costs take 19% of a typical move.</td></tr>
+    <tr><td>Recent half</td><td>+2.46% a trade in the first four precedents, +0.14% in the latest four.</td></tr>
+    <tr><td>House rules</td><td>8 precedents is below the trader’s minimum of 10.</td></tr>
+    <tr><td>Verdict</td><td><span class="tag warn">Thin record</span> Promising, specific to COIN, fading, and too few cases to lean on.</td></tr>
+  </table>
+  <p>The insight a trader can act on: the idea has support, but most of its edge came early, so it deserves a smaller size than the story suggests, or a wait for more cases. Figures as of 7 October 2026; the record grows by one window every trading day.</p>
+
+  <h3>Limits to keep in mind</h3>
+  <ul>
+    <li><b>The record is short</b>, about 60 windows per token. Most conditional setups have fewer than 20 precedents, and the page says so.</li>
+    <li><b>History is not a forecast.</b> A base rate tells you what happened, not what will.</li>
+    <li><b>Prices are spot rTokens.</b> Shorts and leverage assume the matching Bitget stock futures; funding is not modelled.</li>
+    <li><b>Live prices need a connection to Bitget.</b> On a network that cannot reach it, the order-book test and “like right now” are skipped and the page says so.</li>
+    <li>Precedent is a research tool. Nothing in it is financial advice.</li>
+  </ul>
+
+  <h3>Links</h3>
+  <table>
+    <tr><td>Workbench</td><td>https://milliebanned.github.io/precedent/</td></tr>
+    <tr><td>Code</td><td>https://github.com/Milliebanned/precedent</td></tr>
+    <tr><td>The Bitcoin study</td><td>results/report.json and precedent/backtest.py in the repository</td></tr>
+  </table>
+  <p class="foot"><span>Precedent · Product guide</span><span>7</span></p>
+</section>
+
+</main>
+</body>
+</html>
