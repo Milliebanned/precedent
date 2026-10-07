@@ -1,0 +1,198 @@
+{
+ "in_sample": [
+  "2026-07-06",
+  "2026-09-04"
+ ],
+ "sessions": 45,
+ "rules_tried": 144,
+ "rules_profitable": 14,
+ "chosen": {
+  "rule": {
+   "signal": "btc",
+   "side": 1,
+   "hours_before_open": 2,
+   "min_z": 0.5,
+   "universe": "COIN"
+  },
+  "sessions": 45,
+  "traded": 20,
+  "trades": 20,
+  "return": 0.02185028503781461,
+  "sharpe": 5.559600161490124,
+  "sortino": 19.172880948214644,
+  "max_drawdown": -0.002916902927682097,
+  "win_rate": 0.7
+ },
+ "top": [
+  {
+   "rule": {
+    "signal": "btc",
+    "side": 1,
+    "hours_before_open": 2,
+    "min_z": 0.5,
+    "universe": "COIN"
+   },
+   "sessions": 45,
+   "traded": 20,
+   "trades": 20,
+   "return": 0.02185028503781461,
+   "sharpe": 5.559600161490124,
+   "sortino": 19.172880948214644,
+   "max_drawdown": -0.002916902927682097,
+   "win_rate": 0.7
+  },
+  {
+   "rule": {
+    "signal": "btc",
+    "side": 1,
+    "hours_before_open": 4,
+    "min_z": 0.5,
+    "universe": "COIN"
+   },
+   "sessions": 45,
+   "traded": 21,
+   "trades": 21,
+   "return": 0.020067695073585856,
+   "sharpe": 4.57928622267237,
+   "sortino": 11.385132950981454,
+   "max_drawdown": -0.003982818554991607,
+   "win_rate": 0.6190476190476191
+  },
+  {
+   "rule": {
+    "signal": "btc",
+    "side": 1,
+    "hours_before_open": 4,
+    "min_z": 1.0,
+    "universe": "COIN"
+   },
+   "sessions": 45,
+   "traded": 12,
+   "trades": 12,
+   "return": 0.016065803997080463,
+   "sharpe": 4.26793864357961,
+   "sortino": 13.284620901086779,
+   "max_drawdown": -0.002540396024445335,
+   "win_rate": 0.75
+  },
+  {
+   "rule": {
+    "signal": "btc",
+    "side": 1,
+    "hours_before_open": 8,
+    "min_z": 0.5,
+    "universe": "COIN"
+   },
+   "sessions": 45,
+   "traded": 21,
+   "trades": 21,
+   "return": 0.022061799921884173,
+   "sharpe": 3.7610405942079304,
+   "sortino": 7.434785331139626,
+   "max_drawdown": -0.0047282169531961404,
+   "win_rate": 0.7142857142857143
+  },
+  {
+   "rule": {
+    "signal": "btc",
+    "side": 1,
+    "hours_before_open": 4,
+    "min_z": 1.0,
+    "universe": "all"
+   },
+   "sessions": 45,
+   "traded": 12,
+   "trades": 120,
+   "return": 0.0028966614899443854,
+   "sharpe": 0.6230620966438255,
+   "sortino": 0.948344693958136,
+   "max_drawdown": -0.008153065972776097,
+   "win_rate": 0.5
+  },
+  {
+   "rule": {
+    "signal": "btc",
+    "side": 1,
+    "hours_before_open": 4,
+    "min_z": 0.5,
+    "universe": "all"
+   },
+   "sessions": 45,
+   "traded": 21,
+   "trades": 210,
+   "return": -0.005943222964129191,
+   "sharpe": -0.9888268103204172,
+   "sortino": -1.317218757013908,
+   "max_drawdown": -0.013349154322592982,
+   "win_rate": 0.47619047619047616
+  },
+  {
+   "rule": {
+    "signal": "btc",
+    "side": 1,
+    "hours_before_open": 4,
+    "min_z": 1.0,
+    "universe": "megacap"
+   },
+   "sessions": 45,
+   "traded": 12,
+   "trades": 84,
+   "return": -0.004974667783706255,
+   "sharpe": -1.006331560135057,
+   "sortino": -1.4327817737638127,
+   "max_drawdown": -0.01197258418527114,
+   "win_rate": 0.3333333333333333
+  },
+  {
+   "rule": {
+    "signal": "btc",
+    "side": 1,
+    "hours_before_open": 8,
+    "min_z": 0.5,
+    "universe": "all"
+   },
+   "sessions": 45,
+   "traded": 21,
+   "trades": 210,
+   "return": -0.006419041129867131,
+   "sharpe": -1.106188280667536,
+   "sortino": -1.4529764480656693,
+   "max_drawdown": -0.011240497909126845,
+   "win_rate": 0.47619047619047616
+  },
+  {
+   "rule": {
+    "signal": "btc",
+    "side": 1,
+    "hours_before_open": 4,
+    "min_z": 1.0,
+    "universe": "index"
+   },
+   "sessions": 45,
+   "traded": 12,
+   "trades": 24,
+   "return": -0.0031831415617339376,
+   "sharpe": -2.013831304295364,
+   "sortino": -2.319527178217025,
+   "max_drawdown": -0.0034147546045736332,
+   "win_rate": 0.4166666666666667
+  },
+  {
+   "rule": {
+    "signal": "lag",
+    "side": 1,
+    "hours_before_open": 4,
+    "min_z": 1.0,
+    "universe": "megacap"
+   },
+   "sessions": 45,
+   "traded": 12,
+   "trades": 56,
+   "return": -0.009355203464549544,
+   "sharpe": -2.0300288467533423,
+   "sortino": -2.7947890878197903,
+   "max_drawdown": -0.017311107591613917,
+   "win_rate": 0.3333333333333333
+  }
+ ]
+}

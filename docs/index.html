@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Precedent · stress-test a trade idea before you open it</title>
+<meta name="description" content="Type a trade idea for a tokenized US stock. Precedent finds every past closed-market window that looked the same on Bitget, shows how they ended, and runs the stress tests.">
+<link rel="icon" href="mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="./"><img src="mark.svg" alt="" width="26" height="26"><span>Precedent</span></a>
+  <p class="status" id="status" aria-live="polite">Loading the record…</p>
+  <nav>
+    <a href="#how">How it works</a>
+    <a href="https://github.com/Milliebanned/precedent">Code</a>
+  </nav>
+</header>
+
+<main>
+  <section class="intro" id="intro">
+    <h1>Before you open the position, see how the same setup ended every other time.</h1>
+    <p>Tokenized US stocks trade on Bitget while the real market is closed. Type a trade idea for those hours.
+      Precedent finds the past nights and weekends that looked the same, shows how each one ended, and runs the
+      stress tests. You make the call.</p>
+  </section>
+
+  <div class="desk">
+    <section class="talk" aria-label="Conversation">
+      <div class="log" id="log"></div>
+      <div class="examples" id="examples"></div>
+      <form id="ask" autocomplete="off">
+        <label class="sr" for="q">Your trade idea</label>
+        <textarea id="q" rows="2" placeholder="Short COIN 2 hours before the open if Bitcoin is down more than 1%, 3x, 2,000 USDT" maxlength="500"></textarea>
+        <button type="submit" id="go">Test it</button>
+      </form>
+      <details class="rules" id="rules">
+        <summary>My house rules <span id="rules-sum"></span></summary>
+        <p>Your own limits. Every idea is checked against them.</p>
+        <label>Most I will lose on one trade <span><input type="number" id="r-loss" min="1" step="1"> USDT</span></label>
+        <label>Highest leverage I use <span><input type="number" id="r-lev" min="1" step="0.5"> ×</span></label>
+        <label>Fewest precedents I trust <span><input type="number" id="r-n" min="1" step="1"> windows</span></label>
+      </details>
+    </section>
+
+    <section class="file" id="file" aria-label="Case file" hidden>
+      <div class="setup" id="setup"></div>
+      <div class="verdict" id="verdict"></div>
+      <div class="tiles" id="tiles"></div>
+
+      <figure class="chart">
+        <figcaption><h3>How each precedent ended</h3><p id="dots-sub"></p></figcaption>
+        <div class="plot" id="dots"></div>
+      </figure>
+
+      <figure class="chart">
+        <figcaption><h3>The ride from entry to exit</h3><p id="paths-sub"></p></figcaption>
+        <div class="plot" id="paths"></div>
+      </figure>
+
+      <h3 class="sec">Stress tests</h3>
+      <div class="stress" id="stress"></div>
+
+      <h3 class="sec">Research memo <span class="by" id="memo-by"></span></h3>
+      <div class="memo" id="memo"></div>
+
+      <details class="table" id="table-wrap">
+        <summary>Every precedent, as a table</summary>
+        <div class="scroll"><table id="table"></table></div>
+      </details>
+
+      <div class="actions">
+        <button type="button" id="save">Save to notebook</button>
+        <span id="saved-note"></span>
+      </div>
+    </section>
+  </div>
+
+  <section class="notebook" id="notebook" hidden>
+    <h2>Notebook</h2>
+    <p>Ideas you saved, and what happened once the window closed.</p>
+    <div id="notes"></div>
+  </section>
+
+  <section class="how" id="how">
+    <h2>How it works</h2>
+    <ol>
+      <li><b>You describe the idea.</b> Qwen turns the sentence into a setup: stock, direction, size, leverage, entry time, and the conditions you named. You can edit every part.</li>
+      <li><b>Precedent retrieves the precedents.</b> It searches every closed-market window on record for this token on Bitget and keeps the ones that match your conditions at your entry time.</li>
+      <li><b>It shows the distribution.</b> How each one ended after a 0.30% round trip in fees and slippage, the ride on the way, and how the same trade did with no conditions at all.</li>
+      <li><b>It runs the stress tests.</b> Worst night on record, doubled volatility, liquidation distance, the live Bitget order book for your size, and whether the pattern still held in the recent half.</li>
+      <li><b>You decide.</b> Precedent never places an order. Save the idea to the notebook and it will show you what happened.</li>
+    </ol>
+    <p class="fine" id="sources"></p>
+    <p class="fine">History is short and is not a forecast. Shorts and leverage assume the matching Bitget stock futures; prices here are spot rTokens. Not financial advice.</p>
+  </section>
+</main>
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>

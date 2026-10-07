@@ -1,0 +1,29 @@
+name: record
+on:
+  schedule:
+    - cron: "50 13 * * *"   # daily, 20 minutes after the US cash open, once the night's window has closed
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: record
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Refresh candles
+        run: python -m precedent.data
+      - name: Refresh the earnings calendar
+        run: python -m precedent.earnings || echo "calendar unavailable, keeping the cached file"
+      - name: Rebuild the record
+        run: python -m precedent.build && python -m unittest discover tests
+      - name: Commit
+        run: |
+          git config user.name "precedent"
+          git config user.email "precedent@users.noreply.github.com"
+          git add data docs/data.json
+          git diff --cached --quiet || git commit -m "record: $(date -u +%Y-%m-%d)"
+          git push
