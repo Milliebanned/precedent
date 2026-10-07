@@ -38,6 +38,14 @@
     var a = v[0] == null ? null : Number(v[0]), b = v[1] == null ? null : Number(v[1]);
     return (a != null && isNaN(a)) || (b != null && isNaN(b)) ? null : [a, b];
   }
+  /* A condition from the model, {"dir":"down","by":1}, as a [min,max] range. A plain range is passed through. */
+  function cond(v) {
+    if (Array.isArray(v)) return range(v);
+    if (!v || typeof v !== 'object') return null;
+    var by = Math.abs(Number(v.by));
+    if (!(by >= 0) || isNaN(by)) return null;
+    return v.dir === 'down' ? [null, -by] : v.dir === 'up' ? [by, null] : v.dir === 'flat' ? [-by, by] : null;
+  }
   function inRange(x, r) { return !r || ((r[0] == null || x >= r[0]) && (r[1] == null || x <= r[1])); }
 
   /* ---------- house rules ---------- */
@@ -136,11 +144,23 @@
       entry: { ref: ['after_close', 'before_open'].indexOf(e.ref) >= 0 ? e.ref : 'now', hours: clamp(Number(e.hours) || 0, 0, 64) },
       hold: Number(s.hold_hours || s.hold) > 0 ? Number(s.hold_hours || s.hold) : null,
       stop: Number(s.stop_pct || s.stop) > 0 ? Number(s.stop_pct || s.stop) : null,
-      own: range(s.own), ownPct: range(s.own_pct || s.ownPct), btc: range(s.btc),
+      own: s.own && s.own.unit === 'pct' ? null : cond(s.own), ownPct: s.own && s.own.unit === 'pct' ? cond(s.own) : range(s.ownPct), btc: cond(s.btc),
       earnings: s.earnings === true || s.earnings === false ? s.earnings : null,
       likeNow: !!(s.like_now || s.likeNow),
       thesis: String(s.thesis || '').slice(0, 200),
     };
+  }
+  /* The setup in the shape the model was asked to write, so a follow-up starts from something it recognises. */
+  function forModel(s) {
+    if (!s) return null;
+    var c = function (r, unit) {
+      if (!r) return null;
+      var o = r[0] == null && r[1] <= 0 ? { dir: 'down', by: -r[1] } : r[1] == null && r[0] >= 0 ? { dir: 'up', by: r[0] } : r[0] != null && r[0] === -r[1] ? { dir: 'flat', by: r[1] } : null;
+      if (o && unit) o.unit = unit;
+      return o || r;
+    };
+    return { ticker: s.ticker, side: s.side > 0 ? 'long' : 'short', leverage: s.lev, size_usdt: s.size, window: s.window, entry: s.entry, hold_hours: s.hold, stop_pct: s.stop,
+      own: s.ownPct ? c(s.ownPct, 'pct') : c(s.own), btc: c(s.btc), earnings: s.earnings, like_now: s.likeNow, thesis: s.thesis };
   }
   /* Last-resort reader, used only when the model cannot be reached. */
   function localParse(q, prev) {
@@ -640,7 +660,7 @@
     var wn = windowNow();
     var now = { us_market: wn.active ? 'closed' : 'open', window: wn.w && wn.w.kind, hours_to_open: wn.w ? Math.round((wn.w.open - Date.now()) / H * 10) / 10 : null };
     var results = S.res ? brief(S.setup, S.plan, S.res) : null;
-    post({ mode: 'parse', question: question, now: now, setup: S.setup, results: results }, 30000)
+    post({ mode: 'parse', question: question, now: now, setup: forModel(S.setup), results: results }, 30000)
       .then(function (j) { if (j.error || !j.kind) throw new Error(j.error); return j; })
       .catch(function () {
         var local = localParse(question, S.setup);

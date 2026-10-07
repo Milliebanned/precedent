@@ -26,14 +26,13 @@ If the message is a trade idea, or changes the current setup ("what if 3x", "wai
  "entry": {"ref":"now"} or {"ref":"after_close","hours":h} or {"ref":"before_open","hours":h}. Use "now" when they speak of acting now or give no time. "At the close" is after_close 0.
  "hold_hours": null to hold until 15 minutes after the cash open (the default), or a number of hours,
  "stop_pct": null, or a stop-loss distance in percent, e.g. 2,
- "own": null, or [min,max] for the stock's own move since the close at entry time, in units of that stock's normal day. Either bound may be null. "Down big"/"sold off"/"dip" is [null,-0.5]; "up big" is [0.5,null]; "quiet" is [-0.3,0.3]. A percent move the trader states goes in "own_pct" instead.
- "own_pct": null, or [min,max] in percent, only when the trader gives the stock's move in percent,
- "btc": null, or [min,max] for Bitcoin's move since the close at entry time, in percent. "Bitcoin is dumping" is [null,-1]; "Bitcoin down more than 2%" is [null,-2]; "Bitcoin is up" is [1,null],
+ "own": null, or the stock's own move since the close at entry time, as {"dir":"down"|"up"|"flat","by":n} where n is in units of that stock's normal day. "Down big"/"sold off"/"dip" is {"dir":"down","by":0.5}; "up big"/"rallied" is {"dir":"up","by":0.5}; "quiet" is {"dir":"flat","by":0.3}. If the trader gives the stock's move in percent, add "unit":"pct": "TSLA down 3% or more" is {"dir":"down","by":3,"unit":"pct"},
+ "btc": null, or Bitcoin's move since the close at entry time, as {"dir":"down"|"up"|"flat","by":n} with n in percent. "down" means it has fallen by at least n; "up" means it has risen by at least n; "flat" means within n either way. "Bitcoin is dumping" is {"dir":"down","by":1}; "Bitcoin down more than 2%" is {"dir":"down","by":2}; "Bitcoin is up" is {"dir":"up","by":1},
  "earnings": true if the idea is about an earnings night, false if they exclude earnings nights, else null,
  "like_now": true if they want past windows that look like current conditions ("like right now", "given where things are"), else false. When true, leave own and btc null: the page fills them from live prices,
  "thesis": the trader's reason in at most 20 words, in their own terms, or ""
 },"say":"one sentence, at most 25 words, restating the setup you will test"}
-When the message changes an existing setup, start from "current setup" in the context and change only what was asked.
+When the message changes an existing setup, start from "current setup" in the context and change only what was asked. A condition there may be written as [min,max]; copy it unchanged unless the trader asks to change it.
 
 If the message is a question about the results on screen, answer it from "results on screen" only, in at most 90 words, plain English, no advice to buy or sell:
 {"kind":"answer","answer":"..."}
@@ -77,7 +76,7 @@ async function chat(env, messages, maxTokens, json) {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${env.LLM_API_KEY}` },
     // Qwen's thinking mode takes over a minute here and adds nothing: both jobs are short and tightly specified.
-    body: JSON.stringify({ model: env.LLM_MODEL, temperature: 0.2, max_tokens: maxTokens, messages, enable_thinking: false,
+    body: JSON.stringify({ model: env.LLM_MODEL, temperature: json ? 0 : 0.2, max_tokens: maxTokens, messages, enable_thinking: false,
       ...(json ? { response_format: { type: "json_object" } } : {}) }),
   });
   if (!res.ok) throw new Error(`model ${res.status}`);
