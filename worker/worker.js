@@ -7,7 +7,7 @@
 
 const TICKERS = ["NVDA", "TSLA", "AAPL", "MSFT", "AMZN", "GOOGL", "META", "SPY", "QQQ", "COIN"];
 const ORIGINS = ["https://milliebanned.github.io", "http://localhost:8000", "http://127.0.0.1:8000"];
-const PER_MINUTE = 10;
+const PER_MINUTE = 12;       // model calls per visitor per minute
 const seen = new Map();   // ip -> recent request times (per isolate; a soft limit)
 
 const PARSE = `You are the intake desk of Precedent, a research workbench for traders of tokenized US stocks on Bitget (rTokens), which trade 24/7 while the US cash market is closed (16:00 to 09:30 New York, and weekends).
@@ -15,6 +15,7 @@ The trader describes a trade idea for a closed-market window. Turn it into a set
 
 Reply with one JSON object and nothing else.
 
+A question about whether to make a trade ("should I buy Tesla tonight?", "is it a good time to short COIN?") is a trade idea: test it.
 If the message is a trade idea, or changes the current setup ("what if 3x", "wait until 2 hours before the open", "try TSLA instead"), reply:
 {"kind":"setup","setup":{
  "ticker": one of ${TICKERS.join(", ")},
@@ -63,12 +64,12 @@ function reply(body, status, origin) {
   return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", ...cors(origin) } });
 }
 
-function limited(ip) {
-  const now = Date.now(), times = (seen.get(ip) || []).filter((t) => now - t < 60000);
+function limited(key, max) {
+  const now = Date.now(), times = (seen.get(key) || []).filter((t) => now - t < 60000);
   times.push(now);
-  seen.set(ip, times);
+  seen.set(key, times);
   if (seen.size > 5000) seen.clear();
-  return times.length > PER_MINUTE;
+  return times.length > max;
 }
 
 async function chat(env, messages, maxTokens, json) {
@@ -91,10 +92,11 @@ export default {
     const origin = request.headers.get("Origin") || "";
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(origin) });
     if (request.method !== "POST") return reply({ service: "precedent", models: env.LLM_MODEL }, 200, origin);
-    if (limited(request.headers.get("CF-Connecting-IP") || "?")) return reply({ error: "Too many requests. Wait a minute." }, 429, origin);
-
+    const ip = request.headers.get("CF-Connecting-IP") || "?";
     let body;
     try { body = await request.json(); } catch { return reply({ error: "Bad request." }, 400, origin); }
+
+    if (limited(ip, PER_MINUTE)) return reply({ error: "Too many requests. Wait a minute." }, 429, origin);
 
     try {
       if (body.mode === "parse") {

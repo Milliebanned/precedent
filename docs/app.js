@@ -12,10 +12,10 @@
   var $ = function (id) { return document.getElementById(id); };
 
   var EXAMPLES = [
-    'Short COIN 2 hours before the open if Bitcoin is down more than 1%, 3x, 2,000 USDT',
-    'Long NVDA over the weekend with 2,000 USDT',
-    'TSLA sold off hard after the close. Buy the dip 4 hours before the open with a 2% stop',
-    'Long QQQ now, given where things are right now',
+    ['Short COIN when Bitcoin dumps', 'Short COIN 2 hours before the open if Bitcoin is down more than 1%, 3x, 2,000 USDT'],
+    ['Long NVDA over the weekend', 'Long NVDA over the weekend with 2,000 USDT'],
+    ['Buy the TSLA dip with a 2% stop', 'TSLA sold off hard after the close. Buy the dip 4 hours before the open with a 2% stop'],
+    ['Long QQQ, like right now', 'Long QQQ now, given where things are right now'],
   ];
 
   /* ---------- small helpers ---------- */
@@ -58,11 +58,22 @@
   });
 
   /* ---------- live Bitget data ---------- */
+  /* fetch that gives up: a request that hangs must never leave the page looking stuck */
+  function timed(url, opts, ms) {
+    var c = new AbortController(), t = setTimeout(function () { c.abort(); }, ms);
+    return fetch(url, Object.assign({ signal: c.signal }, opts || {})).finally(function () { clearTimeout(t); });
+  }
+  function post(body, ms) {
+    return timed(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }, ms).then(function (r) { return r.json(); });
+  }
+  function unwrap(j) { if (!j || j.code !== '00000') throw new Error((j && j.msg) || 'bitget'); return j.data; }
+  /* Bitget's public API, straight from the browser. Some networks cannot reach it; after one failure the page
+     stops trying for a while so nothing waits on it again. */
+  var bitgetDown = 0;
   function bitget(path) {
-    return fetch(BITGET + path).then(function (r) { return r.json(); }).then(function (j) {
-      if (j.code !== '00000') throw new Error(j.msg);
-      return j.data;
-    });
+    if (Date.now() - bitgetDown < 120000) return Promise.reject(new Error('bitget unreachable'));
+    return timed(BITGET + path, null, 3500).then(function (r) { return r.json(); }).then(unwrap)
+      .catch(function (e) { bitgetDown = Date.now(); throw e; });
   }
   function windowNow() {
     var now = Date.now(), up = D.upcoming;
@@ -389,7 +400,7 @@
     });
     g += '<line class="grid" x1="' + padL + '" x2="' + (W - padR) + '" y1="' + base + '" y2="' + base + '"/>';
     hits.forEach(function (t, i) {
-      g += '<circle class="dot ' + (t.net > 0 ? 'gain' : 'loss') + '" data-i="' + i + '" cx="' + x(pos[i].b * binW) + '" cy="' + (base - R - 1 - (pos[i].k - 1) * (R * 2 + 1)) + '" r="' + R + '"/>';
+      g += '<circle class="dot ' + (t.net > 0 ? 'gain' : 'loss') + '" style="--i:' + i + '" data-i="' + i + '" cx="' + x(pos[i].b * binW) + '" cy="' + (base - R - 1 - (pos[i].k - 1) * (R * 2 + 1)) + '" r="' + R + '"/>';
     });
     var mx = x(r.st.median), anchor = mx > W - 120 ? 'end' : mx < 120 ? 'start' : 'middle';
     g += '<line class="median" x1="' + mx + '" x2="' + mx + '" y1="16" y2="' + base + '"/><text class="lab" x="' + mx + '" y="10" text-anchor="' + anchor + '">median ' + pct(r.st.median) + '</text>';
@@ -425,7 +436,7 @@
     };
     hits.forEach(function (t, i) {
       var p = d(t.ride);
-      g += '<path class="line ' + (t.net > 0 ? 'gain' : 'loss') + '" data-i="' + i + '" d="' + p + '"/><path class="hit" data-i="' + i + '" d="' + p + '"/>';
+      g += '<path class="line ' + (t.net > 0 ? 'gain' : 'loss') + '" pathLength="1" style="--i:' + i + '" data-i="' + i + '" d="' + p + '"/><path class="hit" data-i="' + i + '" d="' + p + '"/>';
     });
     if (hits.length >= 3) {
       var med = [];
@@ -434,7 +445,7 @@
         med.push(vals.length * 2 >= hits.length ? quantile(vals, 0.5) : null);
       }
       var last = med[len - 1];
-      g += '<path class="median" d="' + d(med) + '" pointer-events="none"/>';
+      g += '<path class="median" pathLength="1" d="' + d(med) + '" pointer-events="none"/>';
       if (last != null) g += '<text class="lab" x="' + (W - padR + 6) + '" y="' + (y(last) + 4) + '">median ' + pct(last) + '</text>';
     }
     $('paths').innerHTML = g + '</svg><div class="legend"><span><i class="l" style="background:var(--gain)"></i>ended up after costs</span><span><i class="l" style="background:var(--loss)"></i>ended down</span>' +
@@ -501,7 +512,7 @@
       tile(pct(st.median), 'Median result', usd(st.median * s.size)) +
       tile(pct(r.badCase), r.badLabel, usd(r.badCase * s.size)) +
       tile(pct(st.adverse), 'Typical worst point', 'on the way, before costs');
-    $('file').hidden = false;
+    $('file').hidden = false; $('waiting').hidden = true;
     document.querySelectorAll('.chart').forEach(function (c) { c.hidden = !st.n; });
     drawDots(s, r); drawPaths(s, r);
     drawTests(r.tests);
@@ -511,8 +522,8 @@
     }).join('');
     $('table').innerHTML = '<thead><tr><th>Window opened</th><th>' + s.ticker + ' at entry</th><th>vs normal day</th><th>Bitcoin at entry</th><th>Worst point</th><th>Result</th><th>On ' + num(s.size) + ' USDT</th><th></th></tr></thead><tbody>' + rows + '</tbody>';
     $('table-wrap').hidden = !st.n;
-    $('file').hidden = false;
-    document.body.classList.add('working');
+    $('file-when').textContent = new Date().toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) + ' UTC';
+    window.dispatchEvent(new CustomEvent('precedent:hits', { detail: { ticker: s.ticker, ids: r.hits.map(function (t) { return t.id; }) } }));
   }
   function drawTests(tests) {
     $('stress').innerHTML = tests.map(function (t) {
@@ -556,8 +567,7 @@
   function writeMemo(run) {
     var s = S.setup, p = S.plan, r = S.res;
     $('memo').className = 'memo wait'; $('memo').textContent = 'Writing the memo from these numbers…'; $('memo-by').textContent = '';
-    return fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'memo', brief: brief(s, p, r) }) })
-      .then(function (res) { return res.json(); })
+    return post({ mode: 'memo', brief: brief(s, p, r) }, 40000)
       .then(function (j) { if (!j.memo) throw new Error(j.error || 'no memo'); return { text: j.memo, by: 'written by ' + j.model + ' from the numbers above' }; })
       .catch(function () { return { text: localMemo(s, p, r), by: 'the model was unreachable; summary built from the numbers' }; })
       .then(function (m) {
@@ -596,6 +606,14 @@
     return writeMemo(run);
   }
 
+  /* The first idea is typed in the hero. From then on the form lives in the conversation rail. */
+  function openBench(scroll) {
+    if ($('ask').parentNode !== $('askrail')) { $('askrail').appendChild($('ask')); $('askhome').hidden = true; }
+    $('q').placeholder = 'Ask a follow-up, or try another idea';
+    $('bench').hidden = false;
+    $('waiting').hidden = !$('file').hidden;
+    if (scroll) $('bench').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
   function say(cls, html) {
     var el = document.createElement('div');
     el.className = 'msg ' + cls; el.innerHTML = html;
@@ -615,15 +633,14 @@
     question = question.trim();
     if (!question || !D) return;
     $('go').disabled = true; $('q').value = '';
-    document.body.classList.add('working');
+    openBench(true);
     say('you', esc(question));
     var box = say('bot', '<ul></ul>'), list = box.querySelector('ul');
     step(list, 'Reading the idea (Qwen)');
     var wn = windowNow();
     var now = { us_market: wn.active ? 'closed' : 'open', window: wn.w && wn.w.kind, hours_to_open: wn.w ? Math.round((wn.w.open - Date.now()) / H * 10) / 10 : null };
     var results = S.res ? brief(S.setup, S.plan, S.res) : null;
-    fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'parse', question: question, now: now, setup: S.setup, results: results }) })
-      .then(function (r) { return r.json(); })
+    post({ mode: 'parse', question: question, now: now, setup: S.setup, results: results }, 30000)
       .then(function (j) { if (j.error || !j.kind) throw new Error(j.error); return j; })
       .catch(function () {
         var local = localParse(question, S.setup);
@@ -634,6 +651,7 @@
         if (j.kind !== 'setup') {
           step(list); list.remove();
           box.insertAdjacentHTML('beforeend', '<p>' + esc(j.answer || '') + '</p>');
+          $('waiting').hidden = true;
           return;
         }
         S.setup = normalise(j.setup, S.setup);
@@ -650,9 +668,14 @@
           return done.then(function () {
             step(list);
             box.insertAdjacentHTML('beforeend', '<p><b>' + esc(r.verdict.tag) + '.</b> ' + esc(r.verdict.head) + ' Change any part of the setup on the right, or ask a follow-up.</p>');
-            if (innerWidth < 900) $('file').scrollIntoView({ behavior: 'smooth' });
+            if (innerWidth < 900) $('file').scrollIntoView({ behavior: 'smooth', block: 'start' });
           });
         });
+      })
+      .catch(function () {
+        step(list);
+        box.insertAdjacentHTML('beforeend', '<p>Something went wrong while testing that. Try again.</p>');
+        $('waiting').hidden = true;
       })
       .finally(function () { $('go').disabled = false; $('log').scrollTop = $('log').scrollHeight; });
   }
@@ -696,25 +719,42 @@
     if (b.dataset.del) { list.splice(Number(b.dataset.del), 1); keep(list); }
     if (b.dataset.run) {
       S.setup = list[Number(b.dataset.run)].setup;
-      document.body.classList.add('working');
-      liveState(S.setup.ticker).then(function (l) { S.live = l; analyse(false); scrollTo({ top: 0, behavior: 'smooth' }); });
+      openBench(true);
+      liveState(S.setup.ticker).then(function (l) { S.live = l; analyse(false); });
     }
   });
 
   /* ---------- start ---------- */
   showRules();
-  $('examples').innerHTML = EXAMPLES.map(function (e) { return '<button type="button">' + esc(e) + '</button>'; }).join('');
-  $('examples').addEventListener('click', function (ev) { if (ev.target.tagName === 'BUTTON') ask(ev.target.textContent); });
+  $('examples').innerHTML = EXAMPLES.map(function (e) { return '<button type="button" data-q="' + esc(e[1]) + '">' + esc(e[0]) + '</button>'; }).join('');
+  $('examples').addEventListener('click', function (ev) { if (ev.target.dataset.q) ask(ev.target.dataset.q); });
   fetch('data.json').then(function (r) { return r.json(); }).then(function (data) {
     D = data; U = data.unit; COST = data.cost_per_side;
     var wn = windowNow(), first = D.sessions[0], last = D.sessions[D.sessions.length - 1], left = wn.w ? (wn.active ? wn.w.open : wn.w.close) - Date.now() : 0;
     var clock = left > 0 ? Math.floor(left / H) + 'h ' + Math.floor(left % H / 60000) + 'm' : '';
-    $('status').textContent = D.sessions.length + ' closed-market windows on record, ' + day(first.id) + ' to ' + day(last.id) + ' · US market ' +
-      (wn.active ? 'closed, opens in ' + clock : 'open' + (clock ? ', closes in ' + clock : ''));
-    $('sources').textContent = 'Data: Bitget public market data (15-minute candles for ten rTokens and BTCUSDT, live prices and order book), Bitget’s earnings calendar through bitget-mcp-server, and Qwen for reading the idea and writing the memo. Record last built ' +
+    $('status').lastChild.textContent = 'US market ' + (wn.active ? 'closed · opens in ' + clock : 'open' + (clock ? ' · closes in ' + clock : ''));
+    $('status').dataset.short = (wn.active ? 'Closed · ' : 'Open · ') + clock;
+    var paths = D.tickers.reduce(function (n, t) { return n + Object.keys(D.paths[t]).length; }, 0);
+    $('p-windows').textContent = D.sessions.length; $('p-paths').textContent = paths;
+    $('scene-note').textContent = 'Each line is one real night on Bitget, from the close to the next open. ' + paths + ' of them, ' + day(first.id) + ' to ' + day(last.id) + '.';
+    $('sources').textContent = 'The record holds ' + D.sessions.length + ' closed-market windows from ' + day(first.id) + ' to ' + day(last.id) + ' 2026, last rebuilt ' +
       new Date(D.built).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) + ' UTC.';
+    window.PRECEDENT = D;
+    window.dispatchEvent(new Event('precedent:data'));
     drawNotes();
     var q = new URLSearchParams(location.search).get('q');
     if (q) ask(q);
-  }).catch(function () { $('status').textContent = 'The record could not be loaded. Reload the page.'; });
+  }).catch(function () { $('status').lastChild.textContent = 'The record could not be loaded. Reload the page.'; });
+
+  /* ---------- page chrome ---------- */
+  function chrome() { $('nav').classList.toggle('solid', scrollY > $('top').offsetHeight - 80); }
+  addEventListener('scroll', chrome, { passive: true }); chrome();
+  var seen = 'IntersectionObserver' in window ? new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); seen.unobserve(e.target); } });
+  }, { rootMargin: '0px 0px -8% 0px' }) : null;
+  document.querySelectorAll('.reveal').forEach(function (el) {
+    var i = Array.prototype.indexOf.call(el.parentNode.children, el);
+    el.style.setProperty('--d', el.parentNode.matches('.steps, .checklist') ? i : 0);
+    if (seen) seen.observe(el); else el.classList.add('in');
+  });
 })();
